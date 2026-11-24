@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <title>CALCULHORAS</title>
+    <!-- Icono SVG integrado para pestaña y acceso directo -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231e293b'/%3E%3Crect x='22' y='15' width='56' height='70' rx='8' fill='none' stroke='%2360a5fa' stroke-width='6'/%3E%3Crect x='32' y='25' width='36' height='14' rx='3' fill='%233b82f6'/%3E%3Ctext x='50' y='73' font-family='Arial, sans-serif' font-size='34' font-weight='bold' fill='%23f8fafc' text-anchor='middle'%3E?%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231e293b'/%3E%3Crect x='22' y='15' width='56' height='70' rx='8' fill='none' stroke='%2360a5fa' stroke-width='6'/%3E%3Crect x='32' y='25' width='36' height='14' rx='3' fill='%233b82f6'/%3E%3Ctext x='50' y='73' font-family='Arial, sans-serif' font-size='34' font-weight='bold' fill='%23f8fafc' text-anchor='middle'%3E?%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-color: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 8px 0 15px 0;
+        }
+
+        .header-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        header h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header .subtitle {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1.2px;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Navegación por pestañas */
+        .tabs {
+            display: flex;
+            background-color: var(--card-color);
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Tarjetas y controles comunes */
+        .card {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 22px 15px;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .result-row-inline {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .result-prefix {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .result-big {
+            font-size: 2.7rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-main);
+        }
+
+        .result-sub {
+            color: #60a5fa;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        input[type="number"], input[type="time"] {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            padding: 14px;
+            text-align: center;
+            width: 100%;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .row-2 {
+            display: flex;
+            gap: 12px;
+        }
+
+        .row-2 .input-group {
+            flex: 1;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Estilos Calculadora Normal */
+        .calc-screen {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 15px;
+            text-align: right;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            min-height: 70px;
+            overflow-x: auto;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 16px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background-color: #334155;
+            color: white;
+            cursor: pointer;
+        }
+
+        .calc-btn:active {
+            background-color: #475569;
+        }
+
+        .calc-btn.op {
+            background-color: var(--primary);
+        }
+
+        .calc-btn.clear {
+            background-color: var(--danger);
+        }
+
+        .calc-btn.eq {
+            background-color: #10b981;
+            grid-column: span 2;
+        }
+
+        /* Marca de agua más arriba y alineada a la derecha */
+        footer {
+            padding: 4px 6px 15px 6px;
+            text-align: right;
+            color: rgba(148, 163, 184, 0.45);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-row">
+            <!-- Icono de calculadora con interrogación -->
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" fill="#1e293b"/>
+                <line x1="8" y1="6" x2="16" y2="6" stroke="#a78bfa" stroke-width="2.5"/>
+                <path d="M9.8 11.5a2.3 2.3 0 0 1 4.4.8c0 1.5-2.2 2-2.2 3.2" stroke="#f8fafc" stroke-width="2"/>
+                <circle cx="12" cy="18.5" r="1" fill="#f8fafc" stroke="none"/>
+            </svg>
+            <h1>CALCULHORAS</h1>
+        </div>
+        <div class="subtitle">PEDIDOS ONLINE BAHIA DE CADIZ</div>
+    </header>
+
+    <!-- Menú de Pestañas -->
+    <nav class="tabs">
+        <button class="tab-btn active" onclick="openTab('sumahora', this)">SumaHora</button>
+        <button class="tab-btn" onclick="openTab('horamashora', this)">Hora+Hora</button>
+        <button class="tab-btn" onclick="openTab('calculadora', this)">Calculadora</button>
+    </nav>
+
+    <!-- PESTAÑA 1: SUMAHORA -->
+    <section id="sumahora" class="tab-content active">
+        <div class="card result-box">
+            <div class="result-label">Hora actual: <span id="liveClock">--:--</span></div>
+            <div class="result-row-inline">
+                <span class="result-prefix">RESULTADO:</span>
+                <span class="result-big" id="sumaHoraResult">--:--</span>
+            </div>
+            <div class="result-sub" id="sumaHoraDay">Introduce horas para calcular</div>
+        </div>
+
+        <div class="card">
+            <div class="row-2">
+                <div class="input-group">
+                    <label for="addHoursNow">Horas a sumar</label>
+                    <input type="number" id="addHoursNow" placeholder="0" inputmode="numeric" oninput="calcSumaHora()">
+                </div>
+                <div class="input-group">
+                    <label for="addMinsNow">Minutos (opcional)</label>
+                    <input type="number" id="addMinsNow" placeholder="0" inputmode="numeric" oninput="calcSumaHora()">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PESTAÑA 2: HORA + HORA -->
+    <section id="horamashora" class="tab-content">
+        <div class="card result-box">
+            <div class="result-label">Resultado de la suma</div>
+            <div class="result-big" id="horaMasHoraResult">00:00</div>
+            <div class="result-sub" id="horaMasHoraSub">0h 00m totales</div>
+        </div>
+
+        <div class="card">
+            <div class="row-2">
+                <div class="input-group">
+                    <label for="time1">Primera Hora</label>
+                    <input type="time" id="time1" value="00:00" onchange="calcHoraMasHora()">
+                </div>
+                <div class="input-group">
+                    <label for="time2">Segunda Hora</label>
+                    <input type="time" id="time2" value="00:00" onchange="calcHoraMasHora()">
+                </div>
+            </div>
+            <button class="action-btn" onclick="calcHoraMasHora()">Calcular Suma</button>
+        </div>
+    </section>
+
+    <!-- PESTAÑA 3: CALCULADORA NORMAL -->
+    <section id="calculadora" class="tab-content">
+        <div class="card">
+            <div class="calc-screen" id="calcDisplay">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="calcClear()">C</button>
+                <button class="calc-btn" onclick="calcBackspace()">⌫</button>
+                <button class="calc-btn op" onclick="calcAppend('%')">%</button>
+                <button class="calc-btn op" onclick="calcAppend('/')">÷</button>
+
+                <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                <button class="calc-btn op" onclick="calcAppend('*')">×</button>
+
+                <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                <button class="calc-btn op" onclick="calcAppend('-')">-</button>
+
+                <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                <button class="calc-btn op" onclick="calcAppend('+')">+</button>
+
+                <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                <button class="calc-btn" onclick="calcAppend('.')">.</button>
+                <button class="calc-btn eq" onclick="calcEqual()">=</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; ZULIKI
+    </footer>
+
+    <script>
+        // --- CONTROL DE PESTAÑAS ---
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // --- LÓGICA PESTAÑA 1: SUMAHORA ---
+        function updateLiveClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${h}:${m}`;
+            calcSumaHora();
+        }
+
+        function calcSumaHora() {
+            const addH = parseInt(document.getElementById('addHoursNow').value) || 0;
+            const addM = parseInt(document.getElementById('addMinsNow').value) || 0;
+
+            const now = new Date();
+            const future = new Date(now.getTime() + (addH * 60 + addM) * 60000);
+
+            const resH = String(future.getHours()).padStart(2, '0');
+            const resM = String(future.getMinutes()).padStart(2, '0');
+
+            document.getElementById('sumaHoraResult').textContent = `${resH}:${resM}`;
+
+            const diffDays = Math.floor((future.setHours(0,0,0,0) - now.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) {
+                document.getElementById('sumaHoraDay').textContent = "De hoy";
+            } else if (diffDays === 1) {
+                document.getElementById('sumaHoraDay').textContent = "De mañana (+1 día)";
+            } else if (diffDays > 1) {
+                document.getElementById('sumaHoraDay').textContent = `Dentro de ${diffDays} días`;
+            } else {
+                document.getElementById('sumaHoraDay').textContent = "Hora actual";
+            }
+        }
+
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // --- LÓGICA PESTAÑA 2: HORA + HORA ---
+        function calcHoraMasHora() {
+            const t1 = document.getElementById('time1').value || "00:00";
+            const t2 = document.getElementById('time2').value || "00:00";
+
+            const [h1, m1] = t1.split(':').map(Number);
+            const [h2, m2] = t2.split(':').map(Number);
+
+            const totalMinutes = (h1 * 60 + m1) + (h2 * 60 + m2);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const remMinutes = totalMinutes % 60;
+
+            const clockHours = totalHours % 24;
+            const formattedClock = `${String(clockHours).padStart(2, '0')}:${String(remMinutes).padStart(2, '0')}`;
+
+            document.getElementById('horaMasHoraResult').textContent = formattedClock;
+            document.getElementById('horaMasHoraSub').textContent = `Total acumulado: ${totalHours}h ${String(remMinutes).padStart(2, '0')}m`;
+        }
+
+        // --- LÓGICA PESTAÑA 3: CALCULADORA ---
+        let calcInput = "";
+
+        function calcAppend(val) {
+            if (calcInput === "0" && val !== ".") calcInput = "";
+            calcInput += val;
+            document.getElementById('calcDisplay').textContent = calcInput;
+        }
+
+        function calcClear() {
+            calcInput = "";
+            document.getElementById('calcDisplay').textContent = "0";
+        }
+
+        function calcBackspace() {
+            calcInput = calcInput.slice(0, -1);
+            document.getElementById('calcDisplay').textContent = calcInput || "0";
+        }
+
+        function calcEqual() {
+            try {
+                const sanitized = calcInput.replace(/%/g, '/100');
+                const result = Function('"use strict";return (' + sanitized + ')')();
+                calcInput = String(Number(result.toFixed(6)));
+                document.getElementById('calcDisplay').textContent = calcInput;
+            } catch (e) {
+                document.getElementById('calcDisplay').textContent = "Error";
+                calcInput = "";
+            }
+        }
+    </script>
+</body>
+</html>
